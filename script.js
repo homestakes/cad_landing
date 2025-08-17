@@ -51,10 +51,10 @@ window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 50) {
         navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+        navbar.style.borderBottom = '1px solid #e0e0e0';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)';
+        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+        navbar.style.borderBottom = '1px solid #f0f0f0';
     }
 });
 
@@ -82,7 +82,7 @@ if (contactForm) {
         );
         
         // Open email client
-        window.location.href = `mailto:pete.eiler207@gmail.com?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:pete@caddy3d.com?subject=${subject}&body=${body}`;
         
         // Show success message (optional)
         const submitButton = this.querySelector('button[type="submit"]');
@@ -98,46 +98,76 @@ if (contactForm) {
     });
 }
 
-// Animate elements on scroll
+// Enhanced scroll animations with stagger effect
 const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
+    threshold: 0.05,
+    rootMargin: '0px 0px -100px 0px'
 };
 
-const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(entry => {
+// Create observer for reveal animations
+const revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach((entry, index) => {
         if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-            observer.unobserve(entry.target);
+            // Add stagger delay based on element position
+            setTimeout(() => {
+                entry.target.classList.add('in-view');
+            }, index * 50);
+            revealObserver.unobserve(entry.target);
         }
     });
 }, observerOptions);
 
 // Observe elements for animation
 document.addEventListener('DOMContentLoaded', function() {
+    // Cards and sections to animate
     const animateElements = document.querySelectorAll(
         '.advantage-card, .service-card, .service-card-mini, .process-step, .pricing-card'
     );
     
     animateElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
+        revealObserver.observe(el);
+    });
+    
+    // Animate section titles
+    const sectionTitles = document.querySelectorAll('.section-title');
+    sectionTitles.forEach(title => {
+        title.style.opacity = '0';
+        title.style.transform = 'translateY(20px)';
+        title.style.transition = 'all 0.8s cubic-bezier(0.23, 1, 0.32, 1)';
+    });
+    
+    const titleObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                titleObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    sectionTitles.forEach(title => {
+        titleObserver.observe(title);
+    });
+    
+    // Parallax for sections with background
+    const parallaxSections = document.querySelectorAll('.hero, .advantage, .process, .contact');
+    
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        
+        parallaxSections.forEach(section => {
+            const rate = scrolled * -0.1;
+            const yPos = -(scrolled - section.offsetTop) * 0.1;
+            
+            if (section.classList.contains('hero')) {
+                section.style.backgroundPositionY = `${yPos}px`;
+            }
+        });
     });
 });
 
-// Add hover effect to cards
-document.querySelectorAll('.service-card, .advantage-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-4px)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-    });
-});
+// Add hover effect to cards - removed as it's handled by CSS
 
 // Dynamic year in footer
 const currentYear = new Date().getFullYear();
@@ -148,19 +178,26 @@ if (footerYear) {
 
 // Loading animation for images when they're added
 document.querySelectorAll('img').forEach(img => {
-    img.addEventListener('load', function() {
-        this.style.opacity = '1';
-    });
-    img.style.opacity = '0';
-    img.style.transition = 'opacity 0.5s ease';
+    // Only apply fade-in if image hasn't loaded yet
+    if (!img.complete) {
+        img.style.opacity = '0';
+        img.style.transition = 'opacity 0.5s ease';
+        img.addEventListener('load', function() {
+            this.style.opacity = '1';
+        });
+    } else {
+        // Image already loaded, ensure it's visible
+        img.style.opacity = '1';
+    }
 });
 
 // Parallax effect for hero section (subtle)
 window.addEventListener('scroll', function() {
     const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
+    const hero = document.querySelector('.hero-content');
     if (hero && scrolled < window.innerHeight) {
-        hero.style.transform = `translateY(${scrolled * 0.3}px)`;
+        hero.style.transform = `translateY(${scrolled * 0.15}px)`;
+        hero.style.opacity = 1 - (scrolled / 1000);
     }
 });
 
@@ -190,18 +227,18 @@ window.addEventListener('scroll', function() {
 // Add CSS for active nav state
 const style = document.createElement('style');
 style.textContent = `
-    .nav-menu a.active {
-        color: var(--primary-color);
+    .nav-menu a.active:not(.cta-button) {
+        color: var(--accent-sage);
         position: relative;
     }
-    .nav-menu a.active:after {
+    .nav-menu a.active:not(.cta-button)::after {
         content: '';
         position: absolute;
         bottom: -2px;
         left: 0;
         right: 0;
         height: 2px;
-        background: var(--accent-color);
+        background: var(--accent-sage);
     }
 `;
 document.head.appendChild(style);
