@@ -604,6 +604,8 @@ a:hover {
     background: var(--bg-light);
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
 }
 
 .showcase-grid {
@@ -648,12 +650,65 @@ a:hover {
     transform: scale(1.02);
 }
 
+/* Tablet view */
 @media (max-width: 768px) {
+    .showcase-strip {
+        padding: 2rem 0;
+    }
+    
     .showcase-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.5rem 0 1rem;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+    
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .showcase-grid::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Add subtle scroll indicator */
+    .showcase-grid::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+        background: linear-gradient(to right, transparent, var(--bg-light));
+        pointer-events: none;
     }
     
     .showcase-item {
+        flex: 0 0 280px;
+        height: 180px;
+        scroll-snap-align: start;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .showcase-item:first-child {
+        margin-left: 20px;
+    }
+    
+    .showcase-item:last-child {
+        margin-right: 20px;
+    }
+}
+
+/* Small mobile view */
+@media (max-width: 480px) {
+    .showcase-strip {
+        padding: 1.5rem 0;
+    }
+    
+    .showcase-item {
+        flex: 0 0 240px;
         height: 150px;
     }
 }

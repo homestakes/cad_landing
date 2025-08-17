@@ -150,21 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         titleObserver.observe(title);
     });
     
-    // Parallax for sections with background
-    const parallaxSections = document.querySelectorAll('.hero, .advantage, .process, .contact');
-    
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        
-        parallaxSections.forEach(section => {
-            const rate = scrolled * -0.1;
-            const yPos = -(scrolled - section.offsetTop) * 0.1;
-            
-            if (section.classList.contains('hero')) {
-                section.style.backgroundPositionY = `${yPos}px`;
-            }
-        });
-    });
+    // Removed parallax effects - keeping things simple
 });
 
 // Add hover effect to cards - removed as it's handled by CSS
@@ -191,15 +177,7 @@ document.querySelectorAll('img').forEach(img => {
     }
 });
 
-// Parallax effect for hero section (subtle)
-window.addEventListener('scroll', function() {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero-content');
-    if (hero && scrolled < window.innerHeight) {
-        hero.style.transform = `translateY(${scrolled * 0.15}px)`;
-        hero.style.opacity = 1 - (scrolled / 1000);
-    }
-});
+// Removed parallax effect - was causing content to be hidden when scrolling
 
 // Add active state to navigation based on scroll position
 window.addEventListener('scroll', function() {
